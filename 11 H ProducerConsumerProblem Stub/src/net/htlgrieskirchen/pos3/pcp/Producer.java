@@ -5,7 +5,10 @@
  */
 package net.htlgrieskirchen.pos3.pcp;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Producer implements Runnable {
 
@@ -21,16 +24,33 @@ public class Producer implements Runnable {
         this.storage = storage;
         this.sleepTime = sleepTime;
         this.numberOfItems = numberOfItems;
+        this.sent = new ArrayList<>();
     }
 
     public List<Integer> getSent() {
-        // implement this
-        return null;
+        return sent;
     }
 
     @Override
     public void run() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        for (int i = 0; i < numberOfItems; i++) {
+            do {
+                try {
+                    if (storage.put(i) == true) {
+                        sent.add(i);
+                    } else {
+                        Thread.sleep(sleepTime);
+                    }
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(Producer.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            } while (!sent.contains(i));
+        }
+        if (numberOfItems == sent.size()) {
+            storage.setProductionComplete();
+        } else {
+            System.out.println("Error! Size of \"sent\" is wrong");
+        }
     }
 
 }

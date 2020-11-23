@@ -27,15 +27,12 @@ public class Executor {
 
         Consumer c1 = new Consumer("C1", s, t1);
         Consumer c2 = new Consumer("C2", s, t2);
-
         threadPool.execute(c1);
         threadPool.execute(c2);
 
         Producer p = new Producer("P", s, t3, t4);
-       
         Future producerStatus1 = threadPool.submit(p);
         producerStatus1.get();
-
         threadPool.shutdown();
         threadPool.awaitTermination(1, TimeUnit.MINUTES);
 
